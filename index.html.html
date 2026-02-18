@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DraftKita - Solusi Draft Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #3182ce 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 20s infinite linear;
+            border-radius: 50%;
+        }
+
+        .bg-animation span:nth-child(1) { left: 10%; animation-delay: 0s; width: 80px; height: 80px; }
+        .bg-animation span:nth-child(2) { left: 30%; animation-delay: 2s; width: 40px; height: 40px; }
+        .bg-animation span:nth-child(3) { left: 50%; animation-delay: 4s; width: 100px; height: 100px; }
+        .bg-animation span:nth-child(4) { left: 70%; animation-delay: 0s; width: 60px; height: 60px; }
+        .bg-animation span:nth-child(5) { left: 90%; animation-delay: 3s; width: 50px; height: 50px; }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Navigation */
+        nav {
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(30, 58, 95, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo img {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #63b3ed;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 15px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #63b3ed;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 20px 100px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(99, 179, 237, 0.2);
+            color: #63b3ed;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            border: 1px solid rgba(99, 179, 237, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            color: white;
+            margin-bottom: 25px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .hero h1 span {
+            color: #63b3ed;
+            position: relative;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 40px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: #63b3ed;
+            color: #1a365d;
+        }
+
+        .btn-primary:hover {
+            background: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 179, 237, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #63b3ed;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 50px;
+            background: #f7fafc;
+        }
+
+        .features-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 15px;
+        }
+
+        .features > p {
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3182ce, #63b3ed);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #2b6cb0;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            color: #1a365d;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 50px;
+            background: white;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 50px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,179,237,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a202c;
+            color: white;
+            padding: 60px 50px 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 50px;
+        }
+
+        .footer-brand img {
+            height: 50px;
+            margin-bottom: 20px;
+        }
+
+        .footer-brand p {
+            color: #a0aec0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .footer-links h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: #63b3ed;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #2d3748;
+            padding-top: 30px;
+            text-align: center;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .about-container {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 100px 20px 60px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .stats {
+                gap: 30px;
+            }
+            
+            .features, .about, .cta-section {
+                padding: 60px 20px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <img src="logo.png" alt="DraftKita Logo">
+            <span class="logo-text">Draft<span>Kita</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#fitur">Fitur</a></li>
+            <li><a href="#tentang">Tentang</a></li>
+            <li><a href="#kontak">Kontak</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">✨ Solusi Draft Profesional</div>
+            <h1>Buat Draft Dokumen <span>Cepat & Berkualitas</span></h1>
+            <p>DraftKita membantu Anda membuat berbagai jenis dokumen profesional dengan mudah. Dari surat lamaran, proposal, kontrak, hingga dokumen legal — semua dalam satu platform.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">Mulai Gratis</a>
+                <a href="#" class="btn btn-secondary">Lihat Demo</a>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">10K+</span>
+                    <div class="stat-label">Dokumen Dibuat</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5K+</span>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99%</span>
+                    <div class="stat-label">Tingkat Kepuasan</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="fitur">
+        <div class="features-header">
+            <h2>Fitur Unggulan Kami</h2>
+            <p>Semua yang Anda butuhkan untuk membuat dokumen profesional dengan efisien</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Template Siap Pakai</h3>
+                <p>Puluhan template profesional untuk berbagai kebutuhan dokumen. Tinggal pilih dan edit sesuai kebutuhan Anda.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Proses Cepat</h3>
+                <p>Buat dokumen berkualitas dalam hitungan menit, bukan jam. Hemat waktu untuk hal yang lebih penting.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Keamanan Terjamin</h3>
+                <p>Dokumen Anda dienkripsi dan aman. Privasi data adalah prioritas utama kami.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>Editor Intuitif</h3>
+                <p>Antarmuka sederhana yang mudah digunakan, bahkan untuk pemula sekalipun.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>Export Multi-Format</h3>
+                <p>Download dokumen dalam PDF, Word, atau format lainnya sesuai kebutuhan Anda.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>Kolaborasi Tim</h3>
+                <p>Bagikan dan edit dokumen bersama tim Anda secara real-time dengan mudah.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="tentang">
+        <div class="about-container">
+            <div class="about-content">
+                <h2>Mengapa Memilih DraftKita?</h2>
+                <p>DraftKita lahir dari kebutuhan akan solusi pembuatan dokumen yang cepat, mudah, dan terjangkau di Indonesia.</p>
+                <p>Kami memahami bahwa tidak semua orang memiliki waktu atau keahlian untuk membuat dokumen profesional dari nol. Oleh karena itu, kami hadir dengan template berkualitas yang dapat disesuaikan dalam hitungan menit.</p>
+                <p>Dengan DraftKita, Anda bisa fokus pada konten dan tujuan dokumen, sementara kami yang mengurus format dan tampilannya.</p>
+                <a href="#" class="btn btn-primary" style="display: inline-block; margin-top: 20px;">Pelajari Lebih Lanjut</a>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=400&fit=crop" alt="Team working">
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Siap Membuat Dokumen Profesional?</h2>
+            <p>Bergabung dengan ribuan pengguna yang telah mempercayakan kebutuhan dokumen mereka kepada DraftKita.</p>
+            <a href="#" class="btn btn-primary" style="font-size: 1.1rem; padding: 18px 50px;">Daftar Sekarang - Gratis!</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="kontak">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="logo.png" alt="DraftKita">
+                <p>DraftKita adalah platform pembuatan dokumen profesional terdepan di Indonesia. Kami berkomitmen untuk memudahkan proses pembuatan dokumen berkualitas bagi semua orang.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Produk</h4>
+                <ul>
+                    <li><a href="#">Template</a></li>
+                    <li><a href="#">Fitur</a></li>
+                    <li><a href="#">Harga</a></li>
+                    <li><a href="#">Enterprise</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Perusahaan</h4>
+                <ul>
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Karir</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Kontak</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Bantuan</h4>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 DraftKita. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll untuk navigasi
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Animasi saat scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach((el) => {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(30px)";
+            el.style.transition = "all 0.6s ease";
+            observer.observe(el);
+        });
+
+        // Animasi statistik
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + (obj.innerHTML.includes('%') ? '%' : '+');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Trigger animasi saat hero terlihat
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const stats = document.querySelectorAll('.stat-number');
+                    animateValue(stats[0], 0, 10, 2000);
+                    animateValue(stats[1], 0, 5, 2000);
+                    animateValue(stats[2], 0, 99, 2000);
+                    heroObserver.unobserve(entry.target);
+                }
+            });
+        });
+        
+        heroObserver.observe(document.querySelector('.hero'));
+    </script>
+</body>
+</html>
